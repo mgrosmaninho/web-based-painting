@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+	<!-- 
+		
+		Changelog 
+		15/10/2018 Template released, the basic template was tested - mouse tracking is partially complete, colour selection is partially complete
+		17/10/2018 No alterations were made. I´ve just read and understand all code
+		18/10/2018 Fixed fnClearCanvas and renamed the button to "Clear All"
+		19/10/2018 Added 4 different colours (total of 8) and corrected and added the selection of the colours
+		20/10/2018 Added a button "Erase" and the function "fnErase_MGR" 
+		24/10/2018 Added 4 different brush sizes and the function "fnBrushSize_MGR"
+		27/10/2018 Added a function "fnDebugMessage" and a local variable "iSize" to the function "fnBrushSize_MGR"
+		29/10/2018 Added an option to set the background colour at the function fnClearCanvas
+		30/10/2018 Added a function "fnCustomColour_MGR" and a local variable "sCustomColour"
+		01/11/2018 Tried to fix the function "fnCustomColour_MGR"
+		02/11/2018 Tried to fix the function "fnCustomColour_MGR"
+		03/11/2018 Tried to fix the function "fnCustomColour_MGR"
+		05/11/2018 Fixed the function "fnCustomColour_MGR"
+		06/11/2018 Added 2 previews, "colourPreview" and "backgroundPreview" to indicate to the user the colour of the paint and size and the other one to indicate the background colour
+		07/11/2018 Refactored the functions "fnBrushSize_MGR" and "fnCustomColour_MGR" to appear at the Previews properly
+		10/11/2018 Refactored the code to the paint effect and erase effect appears directly beneath the mouse position and be based on the currently selected brush size
+		11/11/2018 Check all code and execute all functions to get everything read to submit
+	
+	
+		Suggested Tasks:
+		1. Take time to fully review and become familiar with this template and ensure it works (in the sense that there are no errors).
+		2. Fully read the assignment brief - it contains all the requirements and details you need to design, test and implement
+		3. After each development cycle (e.g. any time spent programming - this could be an hour to several hours) you are expected to add a changelog entry; each entry should include the date followed by a single sentence that describes what has been changed, updated, added, fixed etc (Please note this is a CORE expectation and requirements, get in to the habit of added them as you go!)
+		4. After you have implemented a requirement (there are 11 in total; these are described in sections 2 & 3 of the Marks Awarded section of the assignment brief) conduct and document a test to check whether the implemented requirement works as expected and as needed.  Record these tests in the test log section located and the bottom of this page.
+		5. You are not allowed to remove any code already provided but you can expand and further develop it
+			5a. Any new functions must abide by the naming convention specified in the assignment brief (e.g. fnPaint should be fnPaint_MW)
+			5b. Any new variables must abide by the naming convention specified in the assignment brief (e.g. iMouseX the initial "i" to indicate it will hold an integer value or sColour to indicate a string value)
+			5c. Change the name of this template so that YOUR ACTUAL student id replaces the word "studentid" in the filename 
+		6. Work to complete the various requirements - start with the simplest, 
+			6a. Review and work out how to set the canvas to a more appropriate size (e.g. 800 pixels wide and tall)
+			6b.	Extend the functionality implemented in the first colour selector to the other three
+			6c. Expand the fnClearCanvas function so that it actually works
+			6d. Work out how to enhance the clear canvas function so that it resets the canvas' background colour to the currently selected colour; 
+				dont forget to update the important variables (e.g. sCanvasColour)
+			6e. Extend the colour selection tools so that there are eight working tools
+			6f. Design some method to indicate which colour is active; this should automatically change as soon as a new colour is selected
+			6g. This template includes some interested opportunities to explore holding down the control, alt and shift keys while moving the mouse; 
+				see if you can somehow use these examples to add implement any of the requirements (e.g. erase mode, brush size, etc.) - remember,
+				don't try to solve the whole thing in a single instance, build it up little by little, keep copies of your work so if everything breaks
+				you can also return to a working version and try again
+
+		Critical note:
+			Please ensure that you maintain and use the expected programming standards outlined in the brief in the Marks Awarded section 4.1 to 4.5 (Programming Standards and Documentation) - especially the use of the REQUIRED function and variable naming convention /
+
+			You will be expected to maintain, program and submit neat code that fully supports appropriate indentation and comments - don't forget failure to maintain standards will result in a significant penalty.  
+
+		Good luck, before we leave you to get on with this - remember, by completing the tutorial sessions and practical’s all this should (at least) be familiar; complete the tutorials before attempting to program this system. 
+
+	-->
+	
+	<head> 
+		<title>Coursework 1 Template v1.0</title>
+		
+		<style>
+			/* 
+				Notes on styling.
+				if you are interested in knowing or using more CSS search "HTML CSS" online; please note - this is a programming challenge, and although a good aesthetic is helpful there are almost no marks for spending time playing with CSS 
+			*/
+
+            body { 
+            	/* 
+            		this css selector (body) tells the browser that this style block applies to ALL <body> elements on this page; just because there is only 1 <body> doesnt make any difference 
+            	*/
+                background-color: #c0c0c0; /* this css property sets the background colour of the entire body of the web page */
+                /* 
+                	the colour: #c0c0c0 uses the format RRGGBB (RR=c0, GG=c0, BB=c0), anytime all the three channels (RGB) is all the same the resulting colour is a shade of grey. Each channel can be 0 to 255 (or in HEX: 00 to FF)
+                */
+            }
+
+
+            #cw1MainContainer { 
+            	/* 
+            		this css selector ("#" followed by "cw1MainContainer") tells the browser that this style block applies to ONLY the element with the id="cw1MainContainer" - the # tells the browser to match IDs
+            	*/
+                position: absolute; /* this css property tells the browser that the selected element (in this case id="cw1MainContainer") will be specifically told where to be displayed using LEFT and TOP (for x and y). 0, 0 being the top left and corner */
+                left: 20px; /* this css property defines/sets the left position for the selected element; in essence, how far from the left edge it should be placed */
+                top: 20px; /* this css property defines/sets the top position for the selected element; in essence, how far from the top edge it should be placed */
+            }
+            
+
+			canvas { 
+				/* 
+					this css selector (canvas) tells the browser that this style block applies to ALL <canvas> elements on this page; just because there is only 1 doesnt make any difference 
+				*/
+                background-color: #fafafa; /* this css property defines/sets the background colour of the selected element (in this case <canvas>) */
+                border: 1px solid #a0a0a0; /* this css property defines/sets the border of the selected element (in this case <canvas>) */
+				cursor: crosshair; /* this css property defines/sets the shape and type of the mouse pointer when over this element */
+			}
+			
+
+			#cw1ColoursContainer {
+				position: relative; /* this css property tells the browser that the selected element (in this case id="cw1ColoursContainer") will be specifically told where to be displayed using LEFT and TOP (for x and y). 0, 0 being the last position of the previous element (rather than the top left corner) */
+			}
+
+
+			#cw1BrushSizeContainer {
+				position: relative; /* this css property tells the browser that the selected element (in this case id="cw1BrushSizeContainer") will be specifically told where to be displayed using LEFT and TOP (for x and y). 0, 0 being the last position of the previous element (rather than the top left corner) */
+				top: -34px; /* this css property tells the browser to move up 34px; because we are positioned 'relatively' this is relative from the previous elements position rather the the top, left corner */
+				left: 330px; /* this css property defines/sets the left position for the selected element; in essence, how far from the left edge it should be placed */
+			}
+			
+
+			#cw1ControlsContainer {
+				position: relative; /* this css property tells the browser that the selected element (in this case id="cw1ControlsContainer") will be specifically told where to be displayed using LEFT and TOP (for x and y). 0, 0 being the last position of the previous element (rather than the top left corner) */
+				top: -60px; /* this css property tells the browser to move up 45px; because we are positioned 'relatively' this is relative from the previous elements position rather the the top, left corner */
+				left: 325px; /* this css property defines/sets the left position for the selected element; in essence, how far from the left edge it should be placed */
+			}
+
+
+			#cw1CustomColoursContainer {
+				position: relative; /* this css property tells the browser that the selected element (in this case id="cw1CustomColoursContainer") will be specifically told where to be displayed using LEFT and TOP (for x and y). 0, 0 being the last position of the previous element (rather than the top left corner) */
+				top: 75px; /* this css property tells the browser to move down 75px; because we are positioned 'relatively' this is relative from the previous elements position rather the the top, left corner */
+			}
+
+
+			#cw1PreviewsContainer {
+				position: relative; /* this css property tells the browser that the selected element (in this case id="cw1PreviewsContainer") will be specifically told where to be displayed using LEFT and TOP (for x and y). 0, 0 being the last position of the previous element (rather than the top left corner) */
+				top: -50px; /* this css property tells the browser to move up 45px; because we are positioned 'relatively' this is relative from the previous elements position rather the the top, left corner */
+				left: 350px; /* this css property defines/sets the left position for the selected element; in essence, how far from the left edge it should be placed */
+			}
+			
+
+            .tool { /* this css selector ("." followed by "tool") tells the browser that this style block applies to ONLY the elements with a matching class, e.g. class="tool" */
+				position: absolute; /* this css property tells the browser that the selected element will be specifically told where to be displayed using LEFT and TOP (for x and y). 0, 0 being the top left and corner */
+				width: 50px; /* set the element's width */
+				height: 50px; /* set the element's height */
+				border: 2px solid #a0a0a0; /* this css property defines/sets the border of the selected element (in this case the elements with class="tool") */
+				cursor: pointer; /* this css property specifies the mouse cursor to be displayed when pointing over an element */
+			}
+
+
+			.tool:hover { /* this ":hover" is a special css condition that to automatically applied if the mouse is moved (or hovers) over the specified element (in this case elements with class="tool") */
+				border: 1px solid #f0f0f0; /* this css property defines/sets the border of the selected element (in this case the elements with the class tool) */
+			}
+
+
+			.previewColour { /* this css selector ("." followed by "previewColour") tells the browser that this style block applies to ONLY the elements with a matching class, e.g. class="previewColour" */
+				width: 10px; /* set the element's width */
+				height: 10px; /* set the element's height */
+				border: 1px solid #a0a0a0; /* this css property defines/sets the border of the selected element (in this case the elements with class="previewColour") */
+			}
+
+
+			.previewBackground { /* this css selector ("." followed by "previewBackground") tells the browser that this style block applies to ONLY the elements with a matching class, e.g. class="previewBackground" */
+				width: 50px; /* set the element's width */
+				height: 50px; /* set the element's height */
+				border: 1px solid #a0a0a0; /* this css property defines/sets the border of the selected element (in this case the elements with class="previewBackground") */
+
+			}
+
+
+			.brush { /* this css selector ("." followed by "brush") tells the browser that this style block applies to ONLY the elements with a matching class, e.g. class="brush" */
+				position: absolute; /* this css property tells the browser that the selected element will be specifically told where to be displayed using LEFT and TOP (for x and y). 0, 0 being the top left and corner */
+				background-color: #000000; /* this css property defines/sets the background colour of the selected element (in this case the elements with class="brush") */
+				border: 2px solid #a0a0a0; /* this css property defines/sets the border of the selected element (in this case the elements with class="brush") */
+				cursor: pointer; /* this css property specifies the mouse cursor to be displayed when pointing over an element */
+			}
+
+
+			.control {
+				background-color: #f1f1f1; /* this css property defines/sets the background colour of the selected element (in this case the elements with class="control") */
+				cursor: pointer; /* this css property specifies the mouse cursor to be displayed when pointing over an element */
+			}
+
+
+			.control:hover { /* this ":hover" is a special css condition that to automatically applied if the mouse is moved (or hovers) over the specified element (in this case elements with class="control") */
+				background-color: #666; /* this css property defines/sets the background colour of the selected element (in this case the elements with class="control") */
+				color: black; /* this css property defines/sets the colour of the selected element */
+			}
+
+			.brush:hover { /* this ":hover" is a special css condition that to automatically applied if the mouse is moved (or hovers) over the specified element (in this case elements with class="brush") */
+				border: 1px solid #f0f0f0; /* this css property defines/sets the border of the selected element (in this case the elements with the class brush) */
+			}
+
+
+			#colour1 { /* this style is applied to elements with a specific id, in this instance "colour1" */
+				left: 0px; /* set the element's left position, how far from the left edge of the parent container */
+				top: 20px; /* set the element's top position, how far from the top edge of the parent container */
+				background-color: #ff0000; /* this css property defines/sets the background colour of the selected element */
+			}
+
+
+			#colour2 { /* apply this style to element id="colour2" */
+				left: 60px; /* set the element's left position, how far from the left edge of the parent container */
+				top: 20px; /* set the element's top position, how far from the top edge of the parent container */
+				background-color: #00ff00; /* this css property defines/sets the background colour of the selected element */
+			}
+            
+
+			#colour3 { /* apply this style to element id="colour3" */
+				left: 120px; /* set the element's left position, how far from the left edge of the parent container */
+				top: 20px; /* set the element's top position, how far from the top edge of the parent container */
+				background-color: #0000ff; /* this css property defines/sets the background colour of the selected element */
+			}
+
+			
+			#colour4 { /* apply this style to element id="colour4" */
+				left: 180px; /* set the element's left position, how far from the left edge of the parent container */
+				top: 20px; /* set the element's top position, how far from the top edge of the parent container */
+				background-color: #ff00ff; /* this css property defines/sets the background colour of the selected element */
+			}
+
+
+			#colour5 { /* apply this style to element id="colour5" */
+				left: 0px; /* set the element's left position, how far from the left edge of the parent container */
+				top: 80px; /* set the element's top position, how far from the top edge of the parent container */
+				background-color: #000000; /* this css property defines/sets the background colour of the selected element */
+			}
+
+
+			#colour6 { /* apply this style to element id="colour6" */
+				left: 60px; /* set the element's left position, how far from the left edge of the parent container */
+				top: 80px; /* set the element's top position, how far from the top edge of the parent container */
+				background-color: #800080; /* this css property defines/sets the background colour of the selected element */
+			}
+
+
+			#colour7 { /* apply this style to element id="colour7" */
+				left: 120px; /* set the element's left position, how far from the left edge of the parent container */
+				top: 80px; /* set the element's top position, how far from the top edge of the parent container */
+				background-color: #00ffff; /* this css property defines/sets the background colour of the selected element */
+			}
+
+
+			#colour8 { /* apply this style to element id="colour8" */
+				left: 180px; /* set the element's left position, how far from the left edge of the parent container */
+				top: 80px; /* set the element's top position, how far from the top edge of the parent container */
+				background-color: #ffff00; /* this css property defines/sets the background colour of the selected element */
+			}
+
+
+			#colourPreview { /* apply this style to element id="colourPreview" */
+				position: absolute; /* this css property tells the browser that the selected element will be specifically told where to be displayed using LEFT and TOP (for x and y). 0, 0 being the top left and corner */
+				left: 5px; /* set the element's left position, how far from the left edge of the parent container */
+				top: 40px; /* set the element's top position, how far from the top edge of the parent container */
+				background-color: #000000; /* this css property defines/sets the background colour of the selected element */
+			}
+
+
+			#backgroundPreview { /* apply this style to element id="backgroundPreview" */
+				left: 400px; /* set the element's left position, how far from the left edge of the parent container */
+				top: 0px; /* set the element's top position, how far from the top edge of the parent container */
+				background-color: #000000; /* this css property defines/sets the background colour of the selected element */
+			}
+
+
+			#brushsize1 { /* this style is applied to elements with a specific id, in this instance "brushsize1" */
+				left: 0px; /* set the element's left position, how far from the left edge of the parent container */
+				top: 20px; /* set the element's top position, how far from the top edge of the parent container */
+				width: 10px; /* set the element's width */
+				height: 10px; /* set the element's height */
+			}
+
+
+			#brushsize2 { /* this style is applied to elements with a specific id, in this instance "brushsize2" */
+				left: 20px; /* set the element's left position, how far from the left edge of the parent container */
+				top: 20px; /* set the element's top position, how far from the top edge of the parent container */
+				width: 20px; /* set the element's width */
+				height: 20px; /* set the element's height */
+			}
+
+
+			#brushsize3 { /* this style is applied to elements with a specific id, in this instance "brushsize3" */
+				left: 50px; /* set the element's left position, how far from the left edge of the parent container */
+				top: 20px; /* set the element's top position, how far from the top edge of the parent container */
+				width: 30px; /* set the element's width */
+				height: 30px; /* set the element's height */
+			}
+
+
+			#brushsize4 { /* this style is applied to elements with a specific id, in this instance "brushsize4" */
+				left: 90px; /* set the element's left position, how far from the left edge of the parent container */
+				top: 20px; /* set the element's top position, how far from the top edge of the parent container */
+				width: 40px; /* set the element's width */
+				height: 40px; /* set the element's height */
+			}
+
+
+			#CustomColour { /* this style is applied to elements with a specific id, in this instance "CustomColour" *
+				top: -10px; /* set the element's top position, how far from the top edge of the parent container */
+				width: 50px; /* set the element's width */
+				height: 50px; /* set the element's height */
+				border: 2px solid #a0a0a0; /* this css property defines/sets the border of the selected element */
+			}
+ 
+
+		</style>
+		
+		<script>
+			var oCanvas, oCanvasContext; //declare the global variables used to hold and control the canvas element
+			var sFillColour; //create a global variable used to hold the active/selected colour
+			var sCanvasColour; //create a global variable used to hold the canvas colour
+			var iMouseX, iMouseY; //declare the global variables used to hold the mouse's coordinates
+			var iBrushWidth, iBrushHeight; //declare the global variables used to hold the selected brush sizes
+
+
+			function fnInitialise(iCanvasWidth, iCanvasHeight) {
+				//this function is called via the HTML body tag and the onload event
+				fnDebugMessage("Running fnInitialise"); //debug message
+				oCanvas = document.getElementById("cw1Canvas"); //create a reference to the HTML canvas element
+				if (oCanvas.getContext) { //test to see if we can read the canvas' context; if true we have found the canvas
+					oCanvas.width=iCanvasWidth; //set the canvas width using the width argument passed to the fnInitialise function
+					oCanvas.height=iCanvasHeight; //set the canvas height using the width argument passed to the fnInitialise function
+					oCanvasContext = oCanvas.getContext("2d"); //set the context to 2D
+					fnDebugMessage("Canvas size, width: " + iCanvasWidth + ", height: " + iCanvasHeight); //debug message, if this message appears in 
+					
+					//set some default values`
+					sCanvasColour=getComputedStyle(oCanvas).getPropertyValue("background-color"); //this instruction automatically detects the background colour of the cavas and stores it in the global sCanvasColour variable
+					fnDebugMessage("Canvas background colour: " + sCanvasColour); //debug message, if this message appears in 
+
+					//let set a default brush size
+					iBrushWidth=10; //set the global variable iBrushWidth a value
+					iBrushHeight=10; //set the global variable iBrushHeight a value
+
+					sFillColour="#ff0000"; //define a value to the variable
+					fnPreviewColour_MGR(sFillColour); //set the preview colour to use the variable that stores the default fill colour
+
+					fnPreviewBackground_MGR(sCanvasColour); //set the preview background to use the variable that stores the default canvas colour
+
+										
+				} else {
+					fnDebugMessage("fnInitialise, failed to get the canvas's context"); //debug message, we were unable to get the canvas' context
+				}	
+			}
+			
+
+			function fnDebugMessage(sMessage) {
+				//this function posts the specific value (sMessage) to the console - a good way of debugging and testing
+				console.log("Debug Message: " + sMessage);
+			}
+			
+			
+			function fnPaint(iX, iY, iWidth, iHeight) {
+				//use this function to fill a rectangle at the specific location (x, y) and specified size (width, height) and specified colour (colour)
+				var iOffset; //declare a local variable; only accessable within the function it was created in to hold an off-set value
+				
+				//if statement to execute a statement if a specified condition is truthy. If the condition is falsy, another statement can be executed
+				if (iWidth==10) { //check if iWidht is equal to 10 
+					iOffset=6; //if is true it set the variable iOffset
+				} else if (iWidth==20) { //check if iWidht is equal to 20
+					iOffset=11; //if is true it set the variable iOffset
+				} else if (iWidth==30) { //check if iWidht is equal to 30
+					iOffset=16; //if is true it set the variable iOffset
+				} else //if all conditions were false than execute the else clause
+					iOffset=21; //if is true it set the variable iOffset
+				//by switching the value provided for sColour to the canvas background colour you will be able to use this to erase painted marks
+				fnDebugMessage("fnPaint called at x: " + iX + ", y: " + iY + ", w: " + iWidth + ", h: " + iHeight); //send a debug message with the location and size
+				
+				oCanvasContext.fillStyle = sFillColour; //use the value stored in the sFillColour global variable as the fill colour
+				oCanvasContext.fillRect(iX - iOffset, iY - iOffset, iWidth, iHeight); //fillRect() method (function) draws a "filled" rectangle; default color was specified by the fillstyle
+			}
+			
+
+			function fnClearCanvas() {
+				//use this function to clear the canvas
+				fnDebugMessage("fnClear Canvas"); //send a debug message with the function being called
+				if(confirm("Would you like to change the background-color to " + sFillColour +"?")) {
+					oCanvasContext.fillStyle = sFillColour; //use the value stored in the sFillColour global variable as the fill colour for canvas background
+					oCanvasContext.fillRect(0, 0, oCanvas.width, oCanvas.height); //start canvas with new background colour
+					sCanvasColour=sFillColour; //set the variable sCanvasColour with the value of the variable sFillColour
+					fnDebugMessage("New canvas background colour: " + sCanvasColour); //debug message, if this message appears in
+					fnPreviewBackground_MGR(sCanvasColour); //call function fnPreviewBackground_MGR and pass the value of sCanvasColour
+				} else {
+					return; //return without alterations on background colour
+				}
+			}
+
+			
+			function fnSetFillColour(sColour) {
+				//use this function to set the fill colour (this refers to the activated colour)
+				fnDebugMessage("fnSetFillColour: " + sColour); //send a debug message with the function being called and the value
+				sFillColour=sColour; //store the value provided as sColour
+			}
+			
+				
+			function fnColourSelected(oElement) {
+				//use this function to process the colour selection tool
+				var sColour; //create a local variable to hold the value of colour string
+
+				//lets use JavaScript to get the colour of the select element
+				sColour=getComputedStyle(oElement).getPropertyValue("background-color"); //this instruction automatically detects the background colour of the element that was self referenced and stores it in the local sColour variable
+				fnSetFillColour(sColour); //execute the fnSetFillColour and pass it the value we are holding in the sColour variable
+				fnPreviewColour_MGR(sColour); //execute the fnPreviewColour_MGR and pass it the value we are holding in the sColour variable
+			}
+
+
+			function fnPreviewColour_MGR(sColour) {
+				//use this function to show the colour selected in the Preview Colour
+				var oPreview; //define a variable object to hold the information about Preview
+				oPreview=document.getElementById("colourPreview"); //get element "colourPreview" and store at the variable object "oPreview"
+				oPreview.style.background=sColour; //library function to set the background colour for an object
+			}
+
+
+			function fnPreviewBackground_MGR(sColour) {
+				//use this function to show the colour selected in the Preview Background
+				var oPreview; //define a variable object to hold the information about Preview
+				oPreview=document.getElementById("backgroundPreview"); //get element "backgroundPreview" and store at the variable object "oPreview"
+				oPreview.style.background=sColour; //library function to set the background colour for an object
+			}
+
+
+			function fnBrushSize_MGR(iSize) {
+				//use this function to process the brush size selection tool
+				var iSize; //local variable to hold the size of the brush
+				iSize=getComputedStyle(iSize).getPropertyValue("width"); //this instruction automatically detects the size of the element that was self referenced and stores it in the local iSize variable
+				iSize=parseInt(iSize, 10); //this function parses a string and returns an integer
+				iBrushWidth=iSize; //define a variable iBrushWidth with the value of iSize
+				iBrushHeight=iSize; //define a variable iBrushHeight with the value of iSize
+				oPreview=document.getElementById("colourPreview"); //get element "colourPreview" and store at the variable object "oPreview"
+				oPreview.style.width=iBrushWidth+"px"; //defines the width of the object Preview using the value of the variable iBrushWidth
+				oPreview.style.height=iBrushHeight+"px"; //defines the height of the object Preview using the value of the variable iBrushHeight
+				fnDebugMessage("fnBrushSize_MGR: " + iBrushWidth); //send a debug message with the function being called and the value
+			}
+
+
+			function fnErase_MGR() {
+				//use this function to remove any painted mistakes
+				sFillColour=sCanvasColour; //set the color of the painter as the same as the background
+				fnDebugMessage("fnErase_MGR: " + sFillColour); //send a debug message with the function being called and the value
+			}
+
+
+			function fnCustomColour_MGR() {
+				//use this function to process the custom colour selection tool
+				var sCustomColour; //create a local variable to hold the value of colour string
+				sCustomColour = document.getElementById("CustomColour").value; //get element "CustomColour" and store at the variable "sCustomColour"
+				sFillColour=sCustomColour; //set the color of the painter as the same as the variable "sCustomColour"
+				fnPreviewColour_MGR(sFillColour); //execute the fnPreviewColour_MGR and pass it the value we are holding in the sFillColour variable
+			}
+
+
+			function fnTrackMouse(e) {
+				//this function is called "everytime" the user's mouse is moved when over the associated element (in this case the canvas)
+				//we have also added the ability for it to accept a parameter (called e, actually we can call it anything but as event is a reserved work "e" makes some sense
+				var canvasRect = oCanvas.getBoundingClientRect(); //use this function to dynamically get the size of the canvas and its position
+				iMouseX=(e.clientX - canvasRect.left); //modify the original position of the mouse by accounting for the position on the canvas; on the x
+				iMouseY=(e.clientY - canvasRect.top); //modify the original position of the mouse by accounting for the position on the canvas; on the y
+				
+				fnDebugMessage("Tracking mouse: ALT key detected: " + e.altKey); //update the console to show if the alt key code is being pressed 
+				fnDebugMessage("Tracking mouse: SHIFT key detected: " + e.shiftKey); //update the console to show if shift key is being pressed 
+				fnDebugMessage("Tracking mouse: CNTRL key detected: " + e.ctrlKey); //update the console to show if control key is being pressed 
+
+				if (e.buttons==1) { //this checks to see if the user is pressing the left mouse button (1 = the left mouse button)
+					//the user has pressed the left button - so lets start painting
+					fnPaint(iMouseX, iMouseY, iBrushWidth, iBrushHeight); //call the fnPaint function and pass it the coordinates and size to paint
+				} 
+
+				fnDebugMessage("Tracking mouse: x: " + iMouseX + ", y: "+iMouseY); //update the console to show the mouse position, dont forget, you may need to include an offset to centre the paint effect
+			}
+	
+		</script>
+
+	</head>
+	
+	<!-- 
+		this "onload" event fires when the HTML <body> has loaded. In essence, we are telling the browser that once the page 
+		has completely loaded all the content to execute a script. 
+		in this case the function being called is "fnInitialise" and we are passing it two parameters: 
+			the first (work out how this sets the width) = 100 
+			the second (work out how this sets the height) = 100 
+	-->
+	<body onload="fnInitialise(500, 350);">
+
+		<!-- 
+			this div block (HTML page divider) is used to hold the entire interactive painting HTML elements 
+			the benefit of putting multiple elements in a single container is that if you set the location of the 
+			container each of the elements held by the container will move relative to it; move one, move all 
+		-->
+        <div id="cw1MainContainer">
+
+            <!-- this div block is only used to hold the HTML canvas element -->
+            <div id="cw1CanvasContainer">
+                <canvas id="cw1Canvas" onmousemove="fnTrackMouse(event);"></canvas> 
+                <!-- 
+                	by specifing the onmouseover event the canvas will call the "fnTrackMouse" function EVERY time the 
+                	mouse moves 1 pixel over the canvas.
+                	by passing the JavaScript "event" we are effectively also passing details about the event, 
+                	e.g. where the mouse was, what buttons were pressed etc. 
+                -->
+            </div>
+
+            <!-- this div block is only used to group and hold the HTML colour selection tool elements -->
+            <div id="cw1ColoursContainer">
+            	<p><b>&emsp;&emsp;&ensp;Colour Selection Tools</b></p>
+				<div id="colour1" class="tool" onclick="fnColourSelected(this);"></div>
+				<div id="colour2" class="tool" onclick="fnColourSelected(this);"></div>
+				<div id="colour3" class="tool" onclick="fnColourSelected(this);"></div>
+				<div id="colour4" class="tool" onclick="fnColourSelected(this);"></div>
+				<div id="colour5" class="tool" onclick="fnColourSelected(this);"></div>
+				<div id="colour6" class="tool" onclick="fnColourSelected(this);"></div>
+				<div id="colour7" class="tool" onclick="fnColourSelected(this);"></div>
+				<div id="colour8" class="tool" onclick="fnColourSelected(this);"></div>
+            </div>
+
+            <!-- this div block is only used to group and hold the HTML brush size selection tool elements -->
+            <div id="cw1BrushSizeContainer">
+            	<p><b>&ensp;Brush Size Tools</b></p>
+				<div id="brushsize1" class="brush" onclick="fnBrushSize_MGR(this);"></div>
+				<div id="brushsize2" class="brush" onclick="fnBrushSize_MGR(this);"></div>
+				<div id="brushsize3" class="brush" onclick="fnBrushSize_MGR(this);"></div>
+				<div id="brushsize4" class="brush" onclick="fnBrushSize_MGR(this);"></div>
+            </div>
+
+            <!-- this div block is only used to group and hold the HTML custom colour selection tool elements -->
+            <div id="cw1CustomColoursContainer">
+            	<p><b>Custom Colour</b></p>
+				<input id="CustomColour" class="control" type="color" value="#ff0000" onchange="fnCustomColour_MGR()">
+			</div>
+         	
+            <!-- this div block is only used to group and hold the HTML control tool elements -->
+            <div id="cw1ControlsContainer">
+            	<button id="erase" class="control" onclick="fnErase_MGR();">Erase</button>
+				<button id="clear" class="control" onclick="fnClearCanvas();">Clear All</button>				
+            </div>
+
+            <!-- this div block is only used to hold the HTML previews elements -->
+            <div id="cw1PreviewsContainer">
+            	<p><b>Preview</b></p>
+               	<div id="backgroundPreview" class="previewBackground"></div>
+				<div id="colourPreview" class="previewColour"></div>
+            </div>
+			
+        </div>
+		
+	</body>
+	
+	<!-- 
+		Test Log
+		*****************************************************************************************
+		Test Date, Use & Operatins No (1-6), Description, What did you test, Results, Reflections			
+		*****************************************************************************************
+			
+		17/10/2018, Use & Operations, No Alterations were made, I tested the program to know what it was working, the results were that only 1 colour was working and others colours and clear the button it was not working
+		18/10/2018, Features & Functions No 5, Fixed fnClearCanvas and renamed the button to "Clear All", I tested that button to check if clear the entire canvas and worked, PASSED
+		19/10/2018, Features & Functions No 1, Added 4 different colours (total of 8) and corrected and added the selection of the colours, I tested each colour to check if the selected colour correspond to the colour that appears in the canvas, PASSED
+		20/10/2018, Features & Functions No 3, Added a button "Erase" and the function "fnErase_MGR", I tested if it was removing any painting mistakes (painting with the background colour), PASSED
+		24/10/2018, Features & Functions No 4, Added 4 different brush sizes and the function "fnBrushSize_MGR", I tested and no errors occurs but the brush still with the same size, FAILED, I have to understand how the function get the value from the css
+		27/10/2018, Features & Functions No 4, Added a function "fnDebugMessage" and a local variable "iSize" to the function "fnBrushSize_MGR", I tested and all 4 sizes were working but the drawing was not exactly under the cursor, PASSED, I have to correct the position of the drawing when change the brush size
+		29/10/2018, Use & Operations No 6, Added an option to set the background colour at the function fnClearCanvas, I run the test selecting a colour and clicking at the button "ClearAll" and the entire canvas was clear and the selected colour was set as background, PASSED
+		30/10/2018, Features & Funcions No 2, Added a function "fnCustomColour_MGR" and a local variable "sCustomColour", I tested and the function was returning an error, FAILED, I have to study more about how this function works
+		01/11/2018, Features & Funcions No 2, Tried to correct the error that appears in the function "fnCustomColour_MGR" but still not working, I tested and the function was returning an error, FAILED, I can´t get the value of the colour
+		02/11/2018, Features & Funcions No 2, Tried to correct the error that appears in the function "fnCustomColour_MGR" but still not working, I tested and the function was returning an error, FAILED, I can´t get the value of the colour
+		03/11/2018, Features & Funcions No 2, Tried to correct the error that appears in the function "fnCustomColour_MGR" but still not working, I tested and the function was returning an error, FAILED, I can´t get the value of the colour
+		05/11/2018, Features & Funcions No 2, Finally I could execute the function "fnCustomColour_MGR" without errors, PASSED, I was doing a very big function but at the end was short and simple
+		06/11/2018, Use & Operations No 3, Added a Preview "colourPreview" to indicate to the user the colour of the paint and the size. Added another Preview "backgroundPreview" to indicate the background colour, PASSED
+		07/11/2018, Use & Operations No 3 and No 4, Refactored the functions "fnBrushSize_MGR" and "fnCustomColour_MGR" to appear at the Previews properly in a clear way to the user, PASSED
+		10/11/2018, Use & Operations No 1 and No 2, Refactored the code to the paint effect and erase effect appears directly beneath the mouse position and be based on the currently selected brush size, it was necessary add an "if statement" at the function "fnPaint" to get differents offsets for different brush sizes, PASSED
+		11/11/2018, Features & Functions and Use & Operations (all numbers), Check all code and execute all functions to get everything read to submit, PASSED
+						
+	-->
+
+</html>
